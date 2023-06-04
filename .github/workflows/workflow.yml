@@ -41,7 +41,7 @@ jobs:
             az deployment group create \
             --name az-func-workflow-deploy \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP_NAME }} \
-            --template-file azureDeploy.json \
+            --template-file azuredeploy.json \
             --mode incremental \
 
   ############################################################################
