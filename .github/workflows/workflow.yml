@@ -5,7 +5,7 @@ on:
 
 env:
   AZURE_RESOURCE_GROUP_NAME: 'RG_MauFunctionAppPOC'
-  AZURE_FUNCTIONAPP_NAME: 'maufunctionapp'
+  AZURE_FUNCTIONAPP_NAME: 'maufunction'
   AZURE_FUNCTIONAPP_PACKAGE_PATH: '${{ github.workspace }}'       
   BUILD_OUTPUT_PATH: '${{ github.workspace }}/build-artifacts'
   DOTNET_VERSION: '6.0.x'
