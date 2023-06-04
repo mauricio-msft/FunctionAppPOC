@@ -49,5 +49,4 @@ jobs:
     
     - name: Zip Deployment using ARM Template
         shell: pwsh
-        run: |
-            az deployment group create --name deploy --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --template-file azuredeploy.json --parameters functionAppName='${{ env.FUNCTION_APP }}' 
+        run: az deployment group create --name deploy --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --template-file azuredeploy.json --parameters functionAppName='${{ env.FUNCTION_APP }}' 
