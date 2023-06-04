@@ -78,54 +78,54 @@ jobs:
           path: ${{ env.BUILD_OUTPUT_PATH }}
           if-no-files-found: error
 
-    ############################################################################
+  ############################################################################
 
-    deploy-az-function:
-      needs: [build-az-function]
-      runs-on: windows-latest
-      steps:
+  deploy-az-function:
+    needs: [build-az-function]
+    runs-on: windows-latest
+    steps:
+    
+      # Makes source code accessible via $github.workspace
+      - name: 'Checking out source code ...'
+        uses: actions/checkout@v2
       
-        # Makes source code accessible via $github.workspace
-        - name: 'Checking out source code ...'
-          uses: actions/checkout@v2
-        
-        # Authentication
-        # Set up the following secrets in your repository: AZURE_CREDENTIALS
-        # For details see https://docs.microsoft.com/en-us/azure/developer/github/connect-from-azure
-        - name: 'Login to Azure'
-          uses: azure/login@v1
-          with:
-            creds: ${{ secrets.AZURE_CREDENTIALS }}
-            enable-AzPSSession: true
-        
-        - name: 'Fetching Azure Functions Publishing Profile'
-          id: fncapp
-          uses: azure/powershell@v1
-          with:
-            inlineScript: |
-                $profile = ""
-                $profile = Get-AzWebAppPublishingProfile -ResourceGroupName $env:AZURE_RESOURCE_GROUP_NAME -Name $env:AZURE_FUNCTIONAPP_NAME
-                $profile = $profile.Replace("`r", "").Replace("`n", "")
-                Write-Output "::set-output name=pubprofile::$profile"
-                Remove-Variable profile
-            azPSVersion: "latest"
+      # Authentication
+      # Set up the following secrets in your repository: AZURE_CREDENTIALS
+      # For details see https://docs.microsoft.com/en-us/azure/developer/github/connect-from-azure
+      - name: 'Login to Azure'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          enable-AzPSSession: true
+      
+      - name: 'Fetching Azure Functions Publishing Profile'
+        id: fncapp
+        uses: azure/powershell@v1
+        with:
+          inlineScript: |
+              $profile = ""
+              $profile = Get-AzWebAppPublishingProfile -ResourceGroupName $env:AZURE_RESOURCE_GROUP_NAME -Name $env:AZURE_FUNCTIONAPP_NAME
+              $profile = $profile.Replace("`r", "").Replace("`n", "")
+              Write-Output "::set-output name=pubprofile::$profile"
+              Remove-Variable profile
+          azPSVersion: "latest"
 
-        - name: 'Create output directory'
-          shell: bash
-          run: |
-            mkdir ${{ env.BUILD_OUTPUT_PATH }}
+      - name: 'Create output directory'
+        shell: bash
+        run: |
+          mkdir ${{ env.BUILD_OUTPUT_PATH }}
 
-        # Fetch published code
-        - name: 'Download Azure function release build'
-          uses: actions/download-artifact@v2
-          with:
-            name: build_artifacts
-            path: ${{ env.BUILD_OUTPUT_PATH }}
+      # Fetch published code
+      - name: 'Download Azure function release build'
+        uses: actions/download-artifact@v2
+        with:
+          name: build_artifacts
+          path: ${{ env.BUILD_OUTPUT_PATH }}
 
-        # Deploy Azure functions code
-        - name: 'Run Azure Functions Action'
-          uses: azure/functions-action@v1
-          with:
-            app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-            package: ${{ env.BUILD_OUTPUT_PATH }}/${{ env.BUILD_PACKAGE_NAME }}
-            publish-profile: ${{ steps.fncapp.outputs.pubprofile }}
+      # Deploy Azure functions code
+      - name: 'Run Azure Functions Action'
+        uses: azure/functions-action@v1
+        with:
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          package: ${{ env.BUILD_OUTPUT_PATH }}/${{ env.BUILD_PACKAGE_NAME }}
+          publish-profile: ${{ steps.fncapp.outputs.pubprofile }}
