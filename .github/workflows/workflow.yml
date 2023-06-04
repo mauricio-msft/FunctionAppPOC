@@ -19,8 +19,8 @@ env:
 jobs:
   build-and-deploy:
     runs-on: windows-latest
-    environment: dev
     steps:
+
     - name: 'Checkout GitHub Action'
       uses: actions/checkout@v3
 
@@ -49,6 +49,6 @@ jobs:
         package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
     
     - name: 'Deployment using ARM Template'
-        shell: pwsh
-        run: |
-            az deployment group create --name deploy --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --template-file azuredeploy.json 
+      shell: pwsh
+      run: |
+          az deployment group create --name deploy --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --template-file azuredeploy.json 
