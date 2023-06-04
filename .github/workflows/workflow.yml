@@ -4,7 +4,7 @@ on:
   [push]
 
 env:
-  AZURE_RESOURCE_GROUP_NAME: 'git-actions-deploy-func-demo'
+  AZURE_RESOURCE_GROUP_NAME: 'RG_MauFunctionAppPOC'
   AZURE_FUNCTIONAPP_NAME: 'maufunctionapp'
   AZURE_FUNCTIONAPP_PACKAGE_PATH: '.'        
   BUILD_OUTPUT_PATH: '${{ github.workspace }}/build-artifacts'
