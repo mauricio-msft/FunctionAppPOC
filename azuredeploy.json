@@ -51,7 +51,7 @@
     "variables": {
         "hostingPlanName": "[parameters('functionAppName')]",
         "applicationInsightsName": "[parameters('functionAppName')]",
-        "storageAccountName": "[format('{0}azfunctions', uniqueString(resourceGroup().id))]"
+        "storageAccountName": "maufunctionappstorage"
     },
     "resources": [
         {
