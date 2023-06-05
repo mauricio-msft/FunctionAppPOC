@@ -4,11 +4,28 @@ on:
   [push]
 
 env:
-  AZURE_FUNCTIONAPP_NAME: 'maufunction'   # set this to your function app name on Azure
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.'       # set this to the path to your function app project, defaults to the repository root
-  DOTNET_VERSION: '6.0.x'                   # set this to the dotnet version to use (e.g. '2.1.x', '3.1.x', '5.0.x')
+  AZURE_RESOURCE_GROUP: 'RG_MauFunctionAppPOC'  # set this to your Azure Resource group's name
+  AZURE_FUNCTIONAPP_NAME: 'maufunction'         # set this to your function app name on Azure
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.'           # set this to the path to your function app project, defaults to the repository root
+  DOTNET_VERSION: '6.0.x'                       # set this to the dotnet version to use (e.g. '2.1.x', '3.1.x', '5.0.x')
 
 jobs:
+  deploy-azure-infrastructure:
+    runs-on: windows-latest
+    steps:
+    - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS  }}
+        
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@v3
+
+    - name: Deployment using ARM Template
+        shell: pwsh
+        run: |
+            az deployment group create --name deploy --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --template-file azuredeploy.json 
+
   build-and-deploy:
     runs-on: windows-latest
     environment: dev
@@ -35,3 +52,54 @@ jobs:
         app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
         package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
         publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+
+  #######################################################################
+  # TODO:
+  #######################################################################
+  #integration:
+  #  runs-on: windows-latest
+    #steps:
+      #- name: Pull operatons from Function App
+        #shell: pwsh
+        #run: | 
+            #GET https://management.azure.com/subscriptions/{SubId}/resourceGroups/{RGName}/providers/Microsoft.Web/sites/{functionName}/functions?api-version=2015-08-01
+
+      #- name: Pull settings from the Function App
+        #shell: pwsh
+        #run: | 
+            #GET https://management.azure.com/subscriptions/{SubId}/resourceGroups/{RGName}/providers/Microsoft.Web/sites/apimcloud?api-version=2016-08-01
+
+      #- name: Create the API in APIM
+        #shell: pwsh
+        #run: |
+            #PUT https://management.azure.com/subscriptions/{SubId}/resourceGroups/{RGName}/providers/Microsoft.ApiManagement/service/{APIMName}/apis/{APIName}?api-version=2021-08-01
+
+      #- name: List Host Keys (Function App)
+        #shell: pwsh
+        #run: |
+            #POST https://management.azure.com/subscriptions/{SubId}/resourceGroups/{RGName}/providers/Microsoft.Web/sites/{FunctionAppName}/host/default/listkeys?api-version=2016-08-01
+
+      #- name: Create Function Secret (Function App)
+        #shell: pwsh
+        #run: |
+            #PUT https://management.azure.com/subscriptions/{SubId}/resourceGroups/{RGName}/providers/Microsoft.Web/sites/{FunctionAppName}/host/default/functionkeys/{FunctionAppKeyName}?api-version=2016-08-01
+
+      #- name: Create Name Value (APIM)
+        #shell: pwsh
+        #run: |
+            #PUT https://management.azure.com/subscriptions/{SubId}/resourceGroups/{RGName}/providers/Microsoft.ApiManagement/service/{APIMName}/namedValues/{NamedValueName}?api-version=2021-08-01
+
+      #- name: Create a Backend in APIM
+        #shell: pwsh
+        #run: |
+            #PUT https://management.azure.com/subscriptions/{SubId}/resourceGroups/{RGName}/providers/Microsoft.ApiManagement/service/{APIMName}/backends/{BackendName}?api-version=2021-08-01
+
+      #- name: LOOP - Create Operations in APIM (a PUT request per operation in the function app)
+        #shell: pwsh
+        #run: |
+            #PUT https://management.azure.com/subscriptions/{SubId}/resourceGroups/{RGName}/providers/Microsoft.ApiManagement/service/{APIMName}/apis/{APIName}/operations/{OperationName}?api-version=2021-08-01
+
+      #- name: LOOP - Create a Policy per operation in APIM (a PUT request per operation in the function app)
+        #shell: pwsh
+        #run: |
+            #PUT https://management.azure.com/subscriptions/{SubId}/resourceGroups/{RGName}/providers/Microsoft.ApiManagement/service/{APIMName}/apis/{APIName}/operations/{OperationName}/policies/policy?api-version=2021-08-01

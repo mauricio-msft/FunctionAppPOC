@@ -2,6 +2,27 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "apiManagementServiceName": {
+            "type": "string",
+            "defaultValue": "mauapimtest",
+            "metadata": {
+                "description": "The name of the API Management service to create."
+            }
+        },
+        "skuName": {
+            "type": "string",
+            "defaultValue": "Developer",
+            "allowedValues": [
+                "Consumption",
+                "Developer",
+                "Basic",
+                "Standard",
+                "Premium"
+            ],
+            "metadata": {
+                "description": "The SKU (pricing tier) of the API Management service."
+            }
+        },
         "functionAppName": {
             "type": "string",
             "defaultValue": "maufunction",
@@ -30,9 +51,9 @@
         },
         "functionWorkerRuntime": {
             "type": "string",
-            "defaultValue": "dotnet",
+            "defaultValue": "dotnet-isolated",
             "allowedValues": [
-                "dotnet",
+                "dotnet-isolated",
                 "node",
                 "python",
                 "java"
@@ -48,6 +69,23 @@
         "storageAccountName": "maufunctionappstorage"
     },
     "resources": [
+        {
+            "type": "Microsoft.ApiManagement/service",
+            "apiVersion": "2022-08-01",
+            "name": "[parameters('apiManagementServiceName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "[parameters('skuName')]",
+                "capacity": 1
+            },
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "publisherEmail": "admin@contoso.com",
+                "publisherName": "Contoso"
+            }
+        },
         {
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2022-05-01",
