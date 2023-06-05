@@ -27,6 +27,7 @@ jobs:
           az deployment group create --name deploy --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --template-file azuredeploy.json 
 
   build-and-deploy:
+    needs: [deploy-azure-infrastructure]
     runs-on: windows-latest
     environment: dev
     steps:
@@ -57,7 +58,8 @@ jobs:
   # TODO:
   #######################################################################
   #integration:
-  #  runs-on: windows-latest
+    #needs: [build-and-deploy]
+    #runs-on: windows-latest
     #steps:
       #- name: Pull operatons from Function App
         #shell: pwsh
