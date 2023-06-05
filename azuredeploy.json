@@ -4,7 +4,7 @@
     "parameters": {
         "apiManagementServiceName": {
             "type": "string",
-            "defaultValue": "mauapimtest",
+            "defaultValue": "mauapimtestpoc",
             "metadata": {
                 "description": "The name of the API Management service to create."
             }
